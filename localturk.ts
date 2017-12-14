@@ -22,6 +22,7 @@ import {makeTemplate} from './sample-template';
 import * as utils from './utils';
 import { outputFile } from 'fs-extra';
 
+import * as shuffleArray from  'shuffle-array';
 program
   .version('2.0.3')
   .usage('[options] template.html tasks.csv outputs.csv')
@@ -130,7 +131,11 @@ async function getNextTask(): Promise<TaskStats> {
   const completedTasks = (await readCompletedTasks()).map(utils.normalizeValues);
   let nextTask: Task;
   let numTotal = 0;
+  let taskList: Task[] = [];
   for await (const task of csv.readRowObjects(tasksFile)) {
+    taskList.push(task);
+  }  
+  for await (const task of shuffleArray(taskList)) {
     numTotal++;
     if (!nextTask && !isTaskCompleted(utils.normalizeValues(task), completedTasks)) {
       nextTask = task;
