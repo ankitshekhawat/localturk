@@ -195,7 +195,7 @@ app.post('/submit', utils.wrapPromise(async (req, res) => {
 
 app.post('/login-form', utils.wrapPromise(async (req, res) => {
   for await (const user of csv.readRowObjects('meta/user_db.csv')) {
-    if (req.body.uid === user.uid) { res.redirect('/task?uid=' + req.body.uid); }
+    if (req.body.uid.toLowerCase() === user.uid.toLowerCase()) { res.redirect('/task?uid=' + req.body.uid); }
   }
   res.send('Invalid id, try again <a href="/">Go to login screen</a>');
 }));
