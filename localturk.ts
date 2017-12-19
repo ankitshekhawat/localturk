@@ -181,7 +181,11 @@ app.get('/task', utils.wrapPromise(async (req, res) => {
 }));
 
 app.get('/', utils.wrapPromise(async (req, res) => {
-  const html = await fs.readFile("login.html", { encoding: 'utf8' });
+  const msg = req.query.msg;
+  let html = await fs.readFile("login.html", { encoding: 'utf8' });
+  let message = '';
+  if (msg === 'invalidId') { message = 'Invalid id, try again!'; }
+  html = html.replace(/\$\{([message^}]*)\}/g, message);
   res.send(html);
 }));
 
@@ -197,7 +201,8 @@ app.post('/login-form', utils.wrapPromise(async (req, res) => {
   for await (const user of csv.readRowObjects('meta/user_db.csv')) {
     if (req.body.uid.toLowerCase() === user.uid.toLowerCase()) { res.redirect('/task?uid=' + req.body.uid); }
   }
-  res.send('Invalid id, try again <a href="/">Go to login screen</a>');
+  res.redirect('/?msg=invalidId')
+  // res.send('Invalid id, try again <a href="/">Go to login screen</a>');
 }));
 
 app.post('/delete-last', utils.wrapPromise(async (req, res) => {
